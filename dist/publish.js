@@ -56,7 +56,7 @@ function publish(data) {
         const registryAuth = data.registryAuth ? JSON.parse(data.registryAuth) : undefined;
         const logger = new trm_core_1.Logger(trm_core_1.CoreEnv.CLI, trm_core_1.TraceLevel.TRACE_ALL);
         const inquirer = new trm_core_1.Inquirer(trm_core_1.CoreEnv.DUMMY);
-        const oRegistry = new trm_core_1.Registry(registryEndpoint);
+        const oRegistry = new trm_core_1.Registry(registryEndpoint, registryEndpoint);
         const devclass = data.devclass.trim().toUpperCase();
         const target = data.target.trim().toUpperCase();
         var packageName = data.packageName;

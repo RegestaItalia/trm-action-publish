@@ -53,7 +53,7 @@ export async function publish(data: ActionArgs) {
     const registryAuth = data.registryAuth ? JSON.parse(data.registryAuth) : undefined;
     const logger = new Logger(CoreEnv.CLI, TraceLevel.TRACE_ALL);
     const inquirer = new Inquirer(CoreEnv.DUMMY);
-    const oRegistry = new Registry(registryEndpoint);
+    const oRegistry = new Registry(registryEndpoint, registryEndpoint);
 
     const devclass = data.devclass.trim().toUpperCase();
     const target = data.target.trim().toUpperCase();
