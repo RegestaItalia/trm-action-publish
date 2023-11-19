@@ -1,0 +1,36 @@
+{
+  "name": "trm-action-publish",
+  "version": "1.0.0",
+  "description": "Github Action - TRM Publish",
+  "scripts": {
+    "build": "tsc",
+    "copy": "ncp node_modules dist/node_modules"
+  },
+  "homepage": "https://github.com/RegestaItalia/trm-action-publish",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RegestaItalia/trm-action-publish.git"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "author": {
+    "name": "Simone Gaffurini",
+    "email": "simone.gaffurini@regestaitalia.it"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.10.1",
+    "@actions/github": "^5.1.1",
+    "@octokit/core": "^5.0.1",
+    "@octokit/plugin-paginate-rest": "^9.1.4",
+    "trm-core": "^1.0.1",
+    "trm-registry-types": "^1.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.4.6",
+    "ncp": "^2.0.0"
+  }
+}

@@ -1,0 +1,94 @@
+name: 'TRM Publish'
+description: 'Publish a package to TRM Registry'
+inputs:
+  githubToken:
+    description: 'Github token - Only needed when you want to fallback to repository values'
+    required: false
+  registryEndpoint:
+    description: 'TRM Registry Endpoint'
+    default: 'public'
+    required: false
+  registryAuth:
+    description: 'TRM Registry Auth (JSON)'
+    required: false
+  systemDest:
+    description: 'OnPremise System ID'
+    required: true
+  systemAsHost:
+    description: 'OnPremise System Application Server Address'
+    required: true
+  systemSysNr:
+    description: 'OnPremise System Instance Number'
+    required: true
+  systemSapRouter:
+    description: 'OnPremise System SAP Router String'
+    required: false
+  systemClient:
+    description: 'OnPremise System Logon Client'
+    required: true
+  systemLang:
+    description: 'OnPremise System Logon Language'
+    required: true
+  systemUser:
+    description: 'OnPremise System Logon User'
+    required: true
+  systemPassword:
+    description: 'OnPremise System Logon Password'
+    required: true
+  packageName:
+    description: 'TRM Package name'
+    required: false
+  packageVersion:
+    description: 'TRM Package version'
+    required: false
+    default: 'latest'
+  packageDescription:
+    description: 'TRM Package description'
+    required: false
+  packageGit:
+    description: 'TRM Package git'
+    required: false
+  packageWebsite:
+    description: 'TRM Package website'
+    required: false
+  packagePrivate:
+    description: 'TRM Package private'
+    required: true
+  packageLicense:
+    description: 'TRM Package license'
+    required: false
+  packageKeywords:
+    description: 'TRM Package keywords (JSON)'
+    required: false
+  packageAuthors:
+    description: 'TRM Package authors (JSON)'
+    required: false
+  packageBackwardsCompatible:
+    description: 'TRM Package backwards compatible'
+    required: false
+  packageSapEntries:
+    description: 'TRM Package SAP Entries (JSON string or path to file, merged with runtime values)'
+    required: false
+  packageDependencies:
+    description: 'TRM Package Dependencies (JSON string or path to file, merged with runtime values)'
+    required: false
+  devclass:
+    description: 'Devclass'
+    required: true
+  target:
+    description: 'Transport Target'
+    required: true
+  releaseTimeout:
+    description: 'Transport release timeout (in seconds)'
+    default: 180
+    required: false
+  readme:
+    description: 'Markdown string or path to file'
+    required: false
+  skipDependencies:
+    description: 'Skip automatic dependency recognition'
+    default: false
+    required: false
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
