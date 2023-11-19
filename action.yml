@@ -1,5 +1,9 @@
 name: 'TRM Publish'
 description: 'Publish a package to TRM Registry'
+author: 'Simone Gaffurini'
+branding:
+  icon: 'upload'
+  color: 'yellow'
 inputs:
   githubToken:
     description: 'Github token - Only needed when you want to fallback to repository values'
@@ -12,28 +16,28 @@ inputs:
     description: 'TRM Registry Auth (JSON)'
     required: false
   systemDest:
-    description: 'OnPremise System ID'
+    description: 'System ID'
     required: true
   systemAsHost:
-    description: 'OnPremise System Application Server Address'
+    description: 'System Application Server Address'
     required: true
   systemSysNr:
-    description: 'OnPremise System Instance Number'
+    description: 'System Instance Number'
     required: true
   systemSapRouter:
-    description: 'OnPremise System SAP Router String'
+    description: 'System SAP Router String'
     required: false
   systemClient:
-    description: 'OnPremise System Logon Client'
+    description: 'System Logon Client'
     required: true
   systemLang:
-    description: 'OnPremise System Logon Language'
+    description: 'System Logon Language'
     required: true
   systemUser:
-    description: 'OnPremise System Logon User'
+    description: 'System Logon User'
     required: true
   systemPassword:
-    description: 'OnPremise System Logon Password'
+    description: 'System Logon Password'
     required: true
   packageName:
     description: 'TRM Package name'
