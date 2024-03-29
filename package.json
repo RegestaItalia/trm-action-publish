@@ -26,7 +26,7 @@
     "@actions/github": "^5.1.1",
     "@octokit/core": "^5.0.1",
     "@octokit/plugin-paginate-rest": "^9.1.4",
-    "trm-core": "^1.0.1",
+    "trm-core": "^2.2.3",
     "trm-registry-types": "^1.0.3"
   },
   "devDependencies": {

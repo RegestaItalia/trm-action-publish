@@ -29,7 +29,8 @@ publish({
     target: core.getInput('target'),
     readme: core.getInput('readme'),
     releaseTimeout: parseInt(core.getInput('releaseTimeout')),
-    skipDependencies: core.getBooleanInput('skipDependencies')
+    skipDependencies: core.getBooleanInput('skipDependencies'),
+    skipTrLang: core.getBooleanInput('skipTrLang')
 }).then(() => {
     console.log("Package published.");
 }).catch(err => {

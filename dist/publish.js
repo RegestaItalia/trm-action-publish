@@ -230,7 +230,8 @@ function publish(data) {
             releaseTimeout: data.releaseTimeout,
             ci: true,
             tmpFolder: __dirname,
-            skipDependencies: data.skipDependencies
+            skipDependencies: data.skipDependencies,
+            skipLang: data.skipTrLang
         }, inquirer, oSystem, oRegistry, logger);
     });
 }

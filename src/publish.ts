@@ -32,6 +32,7 @@ export type ActionArgs = {
     target: string,
     readme?: string,
     skipDependencies: boolean,
+    skipTrLang: boolean,
     releaseTimeout: number
 };
 
@@ -221,6 +222,7 @@ export async function publish(data: ActionArgs) {
         releaseTimeout: data.releaseTimeout,
         ci: true,
         tmpFolder: __dirname,
-        skipDependencies: data.skipDependencies
+        skipDependencies: data.skipDependencies,
+        skipLang: data.skipTrLang
     }, inquirer, oSystem, oRegistry, logger);
 }

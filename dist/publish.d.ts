@@ -26,6 +26,7 @@ export type ActionArgs = {
     target: string;
     readme?: string;
     skipDependencies: boolean;
+    skipTrLang: boolean;
     releaseTimeout: number;
 };
 export declare function publish(data: ActionArgs): Promise<void>;
