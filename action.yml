@@ -93,6 +93,10 @@ inputs:
     description: 'Skip automatic dependency recognition'
     default: false
     required: false
+  skipTrLang:
+    description: 'Skip translation trasport'
+    default: false
+    required: false
 runs:
   using: 'node20'
   main: 'dist/index.js'
