@@ -1,5 +1,5 @@
 import { AuthenticationType } from "trm-registry-types";
-import { CoreEnv, Logger, Inquirer, Registry, SystemConnector, publish as trmPublish, TraceLevel, TrmManifestDependency } from "trm-core";
+import { Logger, Inquirer, Registry, SystemConnector, publish as trmPublish, TrmManifestDependency } from "trm-core";
 import { getOctokit, context as githubContext } from "@actions/github";
 import { OctokitResponse } from "@octokit/types";
 import * as fs from "fs";
@@ -37,7 +37,7 @@ export type ActionArgs = {
 };
 
 export async function publish(data: ActionArgs) {
-    const githubToken = data.githubToken;
+    /*const githubToken = data.githubToken;
     var repoData: OctokitResponse<any>;
     var octokit: any;
     if (githubToken) {
@@ -224,5 +224,5 @@ export async function publish(data: ActionArgs) {
         tmpFolder: __dirname,
         skipDependencies: data.skipDependencies,
         skipLang: data.skipTrLang
-    }, inquirer, oSystem, oRegistry, logger);
+    }, inquirer, oSystem, oRegistry, logger);*/
 }
