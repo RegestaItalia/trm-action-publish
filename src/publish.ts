@@ -1,42 +1,39 @@
 import { AuthenticationType } from "trm-registry-types";
-import { Logger, Inquirer, Registry, SystemConnector, publish as trmPublish, TrmManifestDependency } from "trm-core";
 import { getOctokit, context as githubContext } from "@actions/github";
 import { OctokitResponse } from "@octokit/types";
+import { ConsoleLogger, Logger, Registry, publish as action } from "trm-core";
+import * as core from "@actions/core";
 import * as fs from "fs";
 
 export type ActionArgs = {
-    githubToken?: string,
     registryEndpoint?: string,
-    registryAuth?: string,
-    systemDest: string,
-    systemAsHost: string,
-    systemSysNr: string,
-    systemSapRouter?: string,
-    systemClient: string,
-    systemLang: string,
-    systemUser: string,
-    systemPassword: string,
-    packageName: string,
-    packageVersion?: string,
-    packageDescription?: string,
-    packageGit?: string,
-    packageWebsite?: string,
-    packagePrivate: boolean,
-    packageLicense?: string,
-    packageKeywords?: string,
-    packageAuthors?: string,
-    packageBackwardsCompatible: boolean,
-    packageSapEntries?: string,
-    packageDependencies?: string,
-    devclass: string,
-    target: string,
-    readme?: string,
-    skipDependencies: boolean,
-    skipTrLang: boolean,
-    releaseTimeout: number
+    registryAuth?: string
 };
 
+const _getRegistry = async (endpoint: string, auth?: string): Promise<Registry> => {
+    const registry = new Registry(endpoint);
+    if(auth){
+        var oAuth: any;
+        try{
+            oAuth = JSON.parse(auth);
+        }catch(e){
+            throw new Error(`Invalid registry authentication data.`);
+        }
+        await registry.authenticate(oAuth);
+    }
+    return registry;
+}
+
 export async function publish(data: ActionArgs) {
+    Logger.logger = new ConsoleLogger(core.isDebug());
+    const registry = await _getRegistry(data.registryEndpoint || 'public', data.registryAuth);
+    await action({
+        package: {
+            name: '',
+            version: ''
+        },
+        registry: new Registry('')
+    });
     /*const githubToken = data.githubToken;
     var repoData: OctokitResponse<any>;
     var octokit: any;
