@@ -1,4 +1,4 @@
-import { ConsoleLogger, Logger, Registry, ServerSystemConnector, SystemConnector, TrmManifestDependency, publish as action } from "trm-core";
+import { CliInquirer, ConsoleLogger, Inquirer, Logger, Registry, ServerSystemConnector, SystemConnector, TrmManifestDependency, publish as action } from "trm-core";
 import * as core from "@actions/core";
 import * as fs from "fs";
 import { GithubLogger } from "./GithubLogger";
@@ -105,6 +105,7 @@ export async function publish(data: ActionArgs) {
     }else{
         Logger.logger = new GithubLogger(debug);
     }
+    Inquirer.inquirer = new CliInquirer(); //TODO: dummy inquirer that throws error is needs user interaction
     SystemConnector.systemConnector = new ServerSystemConnector({
         dest: data.systemDest,
         ashost: data.systemAsHost,
