@@ -81,10 +81,28 @@ const _getCustTransports = (iCustTransports: string): string[] => {
 const _getDependencies = (iDependencies: string): TrmManifestDependency[] => {
     var dependencies;
     try{
-        dependencies = JSON.parse(iDependencies);
+        dependencies = JSON.parse(iDependencies).map(o => {
+            return {
+                name: o.name,
+                version: o.version,
+                integrity: o.integrity,
+                registry: o.registry
+            }
+        });
     }catch(e){
         dependencies = [];
     }
+    dependencies.forEach(o => {
+        if(!o.name){
+            throw new Error(`Package dependencies input: missing dependency name.`);
+        }
+        if(!o.version){
+            throw new Error(`Package dependencies input: missing dependency version.`);
+        }
+        if(!o.integrity){
+            throw new Error(`Package dependencies input: missing dependency integrity.`);
+        }
+    });
     return dependencies;
 }
 
@@ -92,9 +110,25 @@ const _getSapEntries = (iSapEntries: string): any => {
     var sapEntries;
     try{
         sapEntries = JSON.parse(iSapEntries);
+        if(Array.isArray(sapEntries)){
+            throw new Error(`SAP Entries input: invalid JSON.`);
+        }
     }catch(e){
         sapEntries = {};
     }
+    Object.keys(sapEntries).forEach(k => {
+        if(!Array.isArray(sapEntries[k])){
+            throw new Error(`SAP Entries input: invalid JSON.`);
+        }
+        sapEntries[k].forEach(o => {
+            if(!Array.isArray(o)){
+                throw new Error(`SAP Entries input: invalid JSON.`);
+            }
+            if(Object.keys(o).length === 0){
+                throw new Error(`SAP Entries input: invalid JSON.`);
+            }
+        });
+    });
     return sapEntries;
 }
 
@@ -162,12 +196,12 @@ export async function publish(data: ActionArgs) {
         devclass,
         target,
         readme,
-        silent: true,
         skipDependencies,
         skipLang,
         overwriteManifestValues,
         releaseTimeout,
         customizingTransports,
-        tmpFolder
+        tmpFolder,
+        silent: true
     });
 }
