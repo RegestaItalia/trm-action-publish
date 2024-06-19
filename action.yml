@@ -5,96 +5,106 @@ branding:
   icon: 'upload'
   color: 'yellow'
 inputs:
-  githubToken:
-    description: 'Github token - Only needed when you want to fallback to repository values'
-    required: false
-  registryEndpoint:
-    description: 'TRM Registry Endpoint'
-    default: 'public'
-    required: false
-  registryAuth:
-    description: 'TRM Registry Auth (JSON)'
-    required: false
   systemDest:
-    description: 'System ID'
+    description: Origin system ID
     required: true
   systemAsHost:
-    description: 'System Application Server Address'
+    description: Origin system application Server
     required: true
-  systemSysNr:
-    description: 'System Instance Number'
+  systemSysnr:
+    description: Origin system instance number
     required: true
-  systemSapRouter:
-    description: 'System SAP Router String'
-    required: false
   systemClient:
-    description: 'System Logon Client'
-    required: true
-  systemLang:
-    description: 'System Logon Language'
+    description: Origin system logon client
     required: true
   systemUser:
-    description: 'System Logon User'
+    description: Origin system logon user
     required: true
   systemPassword:
-    description: 'System Logon Password'
+    description: Origin system logon password
     required: true
-  packageName:
-    description: 'TRM Package name'
-    required: false
-  packageVersion:
-    description: 'TRM Package version'
-    required: false
-    default: 'latest'
-  packageDescription:
-    description: 'TRM Package description'
-    required: false
-  packageGit:
-    description: 'TRM Package git'
-    required: false
-  packageWebsite:
-    description: 'TRM Package website'
-    required: false
-  packagePrivate:
-    description: 'TRM Package private'
+  systemLang:
+    description: Origin system logon language
     required: true
-  packageLicense:
-    description: 'TRM Package license'
-    required: false
-  packageKeywords:
-    description: 'TRM Package keywords (JSON)'
-    required: false
-  packageAuthors:
-    description: 'TRM Package authors (JSON)'
-    required: false
-  packageBackwardsCompatible:
-    description: 'TRM Package backwards compatible'
-    required: false
-  packageSapEntries:
-    description: 'TRM Package SAP Entries (JSON string or path to file, merged with runtime values)'
-    required: false
-  packageDependencies:
-    description: 'TRM Package Dependencies (JSON string or path to file, merged with runtime values)'
-    required: false
   devclass:
-    description: 'Devclass'
+    description: SAP Package
     required: true
   target:
-    description: 'Transport Target'
+    description: SAP Transport release target
     required: true
-  releaseTimeout:
-    description: 'Transport release timeout (in seconds)'
-    default: 180
+  registryEndpoint:
+    description: Registry endpoint
+    default: public
     required: false
-  readme:
-    description: 'Markdown string or path to file'
+  registryAuth:
+    description: Registry authentication in JSON format
     required: false
-  skipDependencies:
-    description: 'Skip automatic dependency recognition'
+  packageName:
+    description: Package name (on registry)
+    required: true
+  packageVersion:
+    description: Package version (on registry)
+    default: latest
+    required: false
+  description:
+    description: Package short description
+    required: false
+  private:
+    description: Package visibility
     default: false
     required: false
-  skipTrLang:
-    description: 'Skip translation trasport'
+  git:
+    description: Git repository url
+    required: false
+  website:
+    description: Package website url
+    required: false
+  license:
+    description: Package SPDX license
+    required: false
+  authors:
+    description: Package authors separated by comma
+    required: false
+  keywords:
+    description: Package keywords separated by comma
+    required: false
+  readme:
+    description: Package readme or path to readme file
+    required: false
+  releaseTimeout:
+    description: Transport request release timeout, in seconds (increase for larger packages)
+    default: 180
+    required: false
+  overwriteManifestValues:
+    description: Overwrite existing manifest values from previous release from registry
+    default: true
+    required: false
+  skipDependencies:
+    description: Skip seraching for TRM/SAP Entries dependencies
+    default: false
+    required: false
+  skipLang:
+    description: Skip translation transport generation
+    default: false
+    required: false
+  backwardsCompatible:
+    description: Indicates that the current release is backwards compatible with the previous releases
+    default: true
+    required: false
+  custTransports:
+    description: Customizing transports separated by comma to include (main transports are sufficient)
+    required: false
+  dependencies:
+    description: Manually added TRM dependencies in JSON format
+    required: false
+  sapEntries:
+    description: Manually added SAP Entries in JSON format
+    required: false
+  tmpFolder:
+    description: Directory for temporary files
+    required: false
+  simpleLog:
+    description: Don't use Github Actions annotations on important log messages
     default: false
     required: false
 runs:
