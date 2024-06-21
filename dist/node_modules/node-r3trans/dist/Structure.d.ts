@@ -1,0 +1,1 @@
+export type Structure = Map<string, number>;
