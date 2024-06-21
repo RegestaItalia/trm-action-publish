@@ -25,36 +25,45 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(require("@actions/core"));
 const publish_1 = require("./publish");
+var releaseTimeout;
+try {
+    releaseTimeout = parseInt(core.getInput('releaseTimeout'));
+}
+catch (e) {
+    core.setFailed(`Invalid release timeout value.`);
+}
 (0, publish_1.publish)({
-    githubToken: core.getInput('githubToken'),
-    registryEndpoint: core.getInput('registryEndpoint'),
-    registryAuth: core.getInput('registryAuth'),
     systemDest: core.getInput('systemDest'),
     systemAsHost: core.getInput('systemAsHost'),
-    systemSysNr: core.getInput('systemSysNr'),
-    systemSapRouter: core.getInput('systemSapRouter'),
+    systemSysnr: core.getInput('systemSysnr'),
     systemClient: core.getInput('systemClient'),
-    systemLang: core.getInput('systemLang'),
     systemUser: core.getInput('systemUser'),
     systemPassword: core.getInput('systemPassword'),
-    packageName: core.getInput('packageName'),
-    packageVersion: core.getInput('packageVersion'),
-    packageDescription: core.getInput('packageDescription'),
-    packageGit: core.getInput('packageGit'),
-    packageWebsite: core.getInput('packageWebsite'),
-    packagePrivate: core.getBooleanInput('packagePrivate'),
-    packageLicense: core.getInput('packageLicense'),
-    packageKeywords: core.getInput('packageKeywords'),
-    packageAuthors: core.getInput('packageAuthors'),
-    packageBackwardsCompatible: core.getBooleanInput('packageBackwardsCompatible'),
-    packageSapEntries: core.getInput('packageSapEntries'),
-    packageDependencies: core.getInput('packageDependencies'),
+    systemLang: core.getInput('systemLang'),
     devclass: core.getInput('devclass'),
     target: core.getInput('target'),
-    readme: core.getInput('readme'),
-    releaseTimeout: parseInt(core.getInput('releaseTimeout')),
+    registryEndpoint: core.getInput('registryEndpoint'),
+    packageName: core.getInput('packageName'),
+    packageVersion: core.getInput('packageVersion'),
+    releaseTimeout,
+    overwriteManifestValues: core.getBooleanInput('overwriteManifestValues'),
     skipDependencies: core.getBooleanInput('skipDependencies'),
-    skipTrLang: core.getBooleanInput('skipTrLang')
+    skipLang: core.getBooleanInput('skipLang'),
+    backwardsCompatible: core.getBooleanInput('backwardsCompatible'),
+    simpleLog: core.getBooleanInput('simpleLog'),
+    description: core.getInput('description'),
+    private: core.getBooleanInput('private'),
+    git: core.getInput('git'),
+    website: core.getInput('website'),
+    license: core.getInput('license'),
+    authors: core.getInput('authors'),
+    keywords: core.getInput('keywords'),
+    readme: core.getInput('readme'),
+    custTransports: core.getInput('custTransports'),
+    dependencies: core.getInput('dependencies'),
+    sapEntries: core.getInput('sapEntries'),
+    registryAuth: core.getInput('registryAuth'),
+    tmpFolder: core.getInput('tmpFolder'),
 }).then(() => {
     console.log("Package published.");
 }).catch(err => {

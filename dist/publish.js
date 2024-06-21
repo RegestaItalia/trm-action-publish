@@ -33,206 +33,175 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.publish = void 0;
-const trm_registry_types_1 = require("trm-registry-types");
 const trm_core_1 = require("trm-core");
-const github_1 = require("@actions/github");
+const core = __importStar(require("@actions/core"));
 const fs = __importStar(require("fs"));
+const GithubLogger_1 = require("./GithubLogger");
+const _getRegistry = (endpoint, auth) => __awaiter(void 0, void 0, void 0, function* () {
+    const registry = new trm_core_1.Registry(endpoint);
+    if (auth) {
+        var oAuth;
+        try {
+            oAuth = JSON.parse(auth);
+        }
+        catch (e) {
+            throw new Error(`Invalid registry authentication data.`);
+        }
+        trm_core_1.Logger.loading(`Logging into registry...`);
+        yield registry.authenticate(oAuth);
+        const whoami = yield registry.whoAmI();
+        const ping = yield registry.ping();
+        trm_core_1.Logger.success(`Logged in as "${whoami.username}"`);
+        if (ping.wallMessage) {
+            trm_core_1.Logger.registryResponse(ping.wallMessage);
+        }
+    }
+    return registry;
+});
+const _getReadme = (iReadme) => {
+    if (iReadme) {
+        try {
+            return fs.readFileSync(iReadme).toString();
+        }
+        catch (e) {
+            return iReadme;
+        }
+    }
+};
+const _getCustTransports = (iCustTransports) => {
+    var customizingTransports;
+    try {
+        customizingTransports = iCustTransports.split(',');
+    }
+    catch (e) {
+        customizingTransports = [];
+    }
+    return customizingTransports;
+};
+const _getDependencies = (iDependencies) => {
+    var dependencies;
+    try {
+        dependencies = JSON.parse(iDependencies).map(o => {
+            return {
+                name: o.name,
+                version: o.version,
+                integrity: o.integrity,
+                registry: o.registry
+            };
+        });
+    }
+    catch (e) {
+        dependencies = [];
+    }
+    dependencies.forEach(o => {
+        if (!o.name) {
+            throw new Error(`Package dependencies input: missing dependency name.`);
+        }
+        if (!o.version) {
+            throw new Error(`Package dependencies input: missing dependency version.`);
+        }
+        if (!o.integrity) {
+            throw new Error(`Package dependencies input: missing dependency integrity.`);
+        }
+    });
+    return dependencies;
+};
+const _getSapEntries = (iSapEntries) => {
+    var sapEntries;
+    try {
+        sapEntries = JSON.parse(iSapEntries);
+        if (Array.isArray(sapEntries)) {
+            throw new Error(`SAP Entries input: invalid JSON.`);
+        }
+    }
+    catch (e) {
+        sapEntries = {};
+    }
+    Object.keys(sapEntries).forEach(k => {
+        if (!Array.isArray(sapEntries[k])) {
+            throw new Error(`SAP Entries input: invalid JSON.`);
+        }
+        sapEntries[k].forEach(o => {
+            if (!Array.isArray(o)) {
+                throw new Error(`SAP Entries input: invalid JSON.`);
+            }
+            if (Object.keys(o).length === 0) {
+                throw new Error(`SAP Entries input: invalid JSON.`);
+            }
+        });
+    });
+    return sapEntries;
+};
 function publish(data) {
     return __awaiter(this, void 0, void 0, function* () {
-        const githubToken = data.githubToken;
-        var repoData;
-        var octokit;
-        if (githubToken) {
-            octokit = (0, github_1.getOctokit)(githubToken);
-            repoData = yield octokit.request('GET /repos/{owner}/{repo}', {
-                owner: github_1.context.repo.owner,
-                repo: github_1.context.repo.repo,
-                headers: {
-                    'X-GitHub-Api-Version': '2022-11-28'
-                }
-            });
-        }
-        const registryEndpoint = data.registryEndpoint || 'public';
-        const registryAuth = data.registryAuth ? JSON.parse(data.registryAuth) : undefined;
-        const logger = new trm_core_1.Logger(trm_core_1.CoreEnv.CLI, trm_core_1.TraceLevel.TRACE_ALL);
-        const inquirer = new trm_core_1.Inquirer(trm_core_1.CoreEnv.DUMMY);
-        const oRegistry = new trm_core_1.Registry(registryEndpoint, registryEndpoint);
-        const devclass = data.devclass.trim().toUpperCase();
-        const target = data.target.trim().toUpperCase();
-        var packageName = data.packageName;
-        var description = data.packageDescription;
-        var git = data.packageGit;
-        var website = data.packageWebsite;
-        var license = data.packageLicense;
-        var keywords = data.packageKeywords;
-        var authors = data.packageAuthors;
-        var sapEntries = data.packageSapEntries;
-        var dependencies = data.packageDependencies;
-        var readme = data.readme;
-        if (!packageName) {
-            if (repoData) {
-                packageName = repoData.data.name;
-                logger.info(`"packageName" from Github repository -> "${packageName}"`);
-            }
-            else {
-                throw new Error(`Argument "packageName" not provided.`);
-            }
-        }
-        if (sapEntries) {
-            var sSapEntries;
-            try {
-                sSapEntries = fs.readFileSync(sapEntries).toString();
-            }
-            catch (e) {
-                sSapEntries = sapEntries;
-            }
-            sapEntries = JSON.parse(sSapEntries);
+        const debug = core.isDebug();
+        if (data.simpleLog) {
+            trm_core_1.Logger.logger = new trm_core_1.ConsoleLogger(debug);
         }
         else {
-            sapEntries = {};
+            trm_core_1.Logger.logger = new GithubLogger_1.GithubLogger(debug);
         }
-        if (dependencies) {
-            var sDependencies;
-            if (dependencies.trim()[0] === '[') {
-                sDependencies = dependencies;
-            }
-            else {
-                sDependencies = fs.readFileSync(dependencies).toString();
-            }
-            dependencies = JSON.parse(sDependencies);
-        }
-        else {
-            dependencies = [];
-        }
-        if (!description) {
-            if (repoData) {
-                description = repoData.data.description;
-                logger.info(`"description" from Github repository -> "${description}"`);
-            }
-        }
-        if (!git) {
-            if (repoData) {
-                git = repoData.data.git_url;
-                logger.info(`"git" from Github repository -> "${git}"`);
-            }
-        }
-        if (!website) {
-            if (repoData) {
-                website = repoData.data.homepage;
-                logger.info(`"website" from Github repository -> "${website}"`);
-            }
-        }
-        if (!license) {
-            if (repoData) {
-                if (repoData.data.license && repoData.data.license.spdx_id) {
-                    license = repoData.data.license.spdx_id;
-                    logger.info(`"license" from Github repository -> "${license}"`);
-                }
-            }
-        }
-        if (!keywords) {
-            if (repoData) {
-                keywords = repoData.data.topics;
-                logger.info(`"keywords" from Github repository -> [${keywords.join(', ')}]`);
-            }
-        }
-        else {
-            var aKeywords = keywords.split(',');
-            aKeywords.forEach(k => {
-                k = k.trim();
-            });
-            keywords = aKeywords;
-        }
-        if (!authors) {
-            if (octokit) {
-                var fetchContributors = true;
-                var iPage = 0;
-                var aContributors = [];
-                while (fetchContributors) {
-                    iPage++;
-                    const tmpContributors = yield octokit.request('GET /repos/{owner}/{repo}/contributors', {
-                        owner: github_1.context.repo.owner,
-                        repo: github_1.context.repo.repo,
-                        per_page: 100,
-                        page: iPage,
-                        headers: {
-                            'X-GitHub-Api-Version': '2022-11-28'
-                        }
-                    });
-                    aContributors = aContributors.concat(tmpContributors.data);
-                    fetchContributors = tmpContributors.data.length > 0;
-                }
-                authors = aContributors.map(o => o.login);
-                logger.info(`"authors" from Github repository -> [${authors.join(', ')}]`);
-            }
-        }
-        else {
-            var aAuthors = authors.split(',');
-            aAuthors.forEach(a => {
-                a = a.trim();
-            });
-            authors = aAuthors;
-        }
-        if (readme) {
-            var sReadme;
-            try {
-                sReadme = fs.readFileSync(readme).toString();
-            }
-            catch (e) {
-                sReadme = readme;
-            }
-            readme = sReadme;
-        }
-        const registryPing = yield oRegistry.ping();
-        if (registryPing.wallMessage) {
-            logger.registryResponse(registryPing.wallMessage);
-        }
-        if (registryAuth && registryPing.authenticationType !== trm_registry_types_1.AuthenticationType.NO_AUTH) {
-            logger.loading(`Logging into registry...`);
-            yield oRegistry.authenticate(inquirer, logger, registryAuth);
-            const whoami = yield oRegistry.whoAmI();
-            logger.success(`Logged in as "${whoami.username}"`);
-        }
-        const oSystem = new trm_core_1.SystemConnector({
+        trm_core_1.Inquirer.inquirer = new trm_core_1.CliInquirer();
+        trm_core_1.SystemConnector.systemConnector = new trm_core_1.ServerSystemConnector({
             dest: data.systemDest,
             ashost: data.systemAsHost,
-            sysnr: data.systemSysNr,
-            saprouter: data.systemSapRouter
+            sysnr: data.systemSysnr
         }, {
             client: data.systemClient,
-            lang: data.systemLang,
             user: data.systemUser,
-            passwd: data.systemPassword
-        }, logger);
-        yield oSystem.connect();
+            passwd: data.systemPassword,
+            lang: data.systemLang
+        });
+        yield trm_core_1.SystemConnector.connect();
+        const registry = yield _getRegistry(data.registryEndpoint, data.registryAuth);
+        const packageName = data.packageName;
+        const packageVersion = data.packageVersion;
+        const packagePrivate = data.private;
+        const authors = data.authors;
+        const backwardsCompatible = data.backwardsCompatible;
+        const devclass = data.devclass;
+        const target = data.target;
+        const releaseTimeout = data.releaseTimeout;
+        const description = data.description;
+        const git = data.git;
+        const license = data.license;
+        const keywords = data.keywords;
+        const website = data.website;
+        const readme = _getReadme(data.readme);
+        const overwriteManifestValues = data.overwriteManifestValues;
+        const customizingTransports = _getCustTransports(data.custTransports);
+        const dependencies = _getDependencies(data.dependencies);
+        const sapEntries = _getSapEntries(data.sapEntries);
+        const skipDependencies = data.skipDependencies;
+        const skipLang = data.skipLang;
+        const tmpFolder = data.tmpFolder || __dirname;
         yield (0, trm_core_1.publish)({
             package: {
                 name: packageName,
-                version: data.packageVersion || 'latest',
+                version: packageVersion,
+                private: packagePrivate,
+                authors,
+                backwardsCompatible,
                 description,
                 git,
-                website,
-                private: data.packagePrivate || false,
-                license,
                 keywords,
-                authors: authors ? authors.map(s => {
-                    return {
-                        name: s
-                    };
-                }) : [],
-                backwardsCompatible: data.packageBackwardsCompatible || false,
-                sapEntries: sapEntries,
-                dependencies: dependencies
+                license,
+                website,
+                dependencies,
+                sapEntries
             },
+            registry,
             devclass,
             target,
             readme,
-            releaseTimeout: data.releaseTimeout,
-            ci: true,
-            tmpFolder: __dirname,
-            skipDependencies: data.skipDependencies,
-            skipLang: data.skipTrLang
-        }, inquirer, oSystem, oRegistry, logger);
+            skipDependencies,
+            skipLang,
+            overwriteManifestValues,
+            releaseTimeout,
+            customizingTransports,
+            tmpFolder,
+            silent: true
+        });
     });
 }
 exports.publish = publish;

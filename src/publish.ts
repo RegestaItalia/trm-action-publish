@@ -1,228 +1,207 @@
-import { AuthenticationType } from "trm-registry-types";
-import { CoreEnv, Logger, Inquirer, Registry, SystemConnector, publish as trmPublish, TraceLevel, TrmManifestDependency } from "trm-core";
-import { getOctokit, context as githubContext } from "@actions/github";
-import { OctokitResponse } from "@octokit/types";
+import { CliInquirer, ConsoleLogger, Inquirer, Logger, Registry, ServerSystemConnector, SystemConnector, TrmManifestDependency, publish as action } from "trm-core";
+import * as core from "@actions/core";
 import * as fs from "fs";
+import { GithubLogger } from "./GithubLogger";
 
 export type ActionArgs = {
-    githubToken?: string,
-    registryEndpoint?: string,
-    registryAuth?: string,
     systemDest: string,
     systemAsHost: string,
-    systemSysNr: string,
-    systemSapRouter?: string,
+    systemSysnr: string,
     systemClient: string,
-    systemLang: string,
     systemUser: string,
     systemPassword: string,
-    packageName: string,
-    packageVersion?: string,
-    packageDescription?: string,
-    packageGit?: string,
-    packageWebsite?: string,
-    packagePrivate: boolean,
-    packageLicense?: string,
-    packageKeywords?: string,
-    packageAuthors?: string,
-    packageBackwardsCompatible: boolean,
-    packageSapEntries?: string,
-    packageDependencies?: string,
+    systemLang: string,
     devclass: string,
     target: string,
-    readme?: string,
+    registryEndpoint: string,
+    packageName: string,
+    packageVersion: string,
+    releaseTimeout: number,
+    overwriteManifestValues: boolean,
     skipDependencies: boolean,
-    skipTrLang: boolean,
-    releaseTimeout: number
+    skipLang: boolean,
+    backwardsCompatible: boolean,
+    simpleLog: boolean,
+    description?: string,
+    private?: boolean,
+    git?: string,
+    website?: string,
+    license?: string,
+    authors?: string,
+    keywords?: string,
+    readme?: string,
+    custTransports?: string,
+    dependencies?: string,
+    sapEntries?: string,
+    registryAuth?: string,
+    tmpFolder?: string
 };
 
-export async function publish(data: ActionArgs) {
-    const githubToken = data.githubToken;
-    var repoData: OctokitResponse<any>;
-    var octokit: any;
-    if (githubToken) {
-        octokit = getOctokit(githubToken);
-        repoData = await octokit.request('GET /repos/{owner}/{repo}', {
-            owner: githubContext.repo.owner,
-            repo: githubContext.repo.repo,
-            headers: {
-                'X-GitHub-Api-Version': '2022-11-28'
+const _getRegistry = async (endpoint: string, auth?: string): Promise<Registry> => {
+    const registry = new Registry(endpoint);
+    if(auth){
+        var oAuth: any;
+        try{
+            oAuth = JSON.parse(auth);
+        }catch(e){
+            throw new Error(`Invalid registry authentication data.`);
+        }
+        Logger.loading(`Logging into registry...`);
+        await registry.authenticate(oAuth);
+        const whoami = await registry.whoAmI();
+        const ping = await registry.ping();
+        Logger.success(`Logged in as "${whoami.username}"`);
+        if(ping.wallMessage){
+            Logger.registryResponse(ping.wallMessage);
+        }
+    }
+    return registry;
+}
+
+const _getReadme = (iReadme: string): string => {
+    if(iReadme){
+        try{
+            return fs.readFileSync(iReadme).toString();
+        }catch(e){
+            return iReadme;
+        }
+    }
+}
+
+const _getCustTransports = (iCustTransports: string): string[] => {
+    var customizingTransports;
+    try{
+        customizingTransports = iCustTransports.split(',');
+    }catch(e){
+        customizingTransports = [];
+    }
+    return customizingTransports;
+}
+
+const _getDependencies = (iDependencies: string): TrmManifestDependency[] => {
+    var dependencies;
+    try{
+        dependencies = JSON.parse(iDependencies).map(o => {
+            return {
+                name: o.name,
+                version: o.version,
+                integrity: o.integrity,
+                registry: o.registry
             }
         });
-    }
-    const registryEndpoint = data.registryEndpoint || 'public';
-    const registryAuth = data.registryAuth ? JSON.parse(data.registryAuth) : undefined;
-    const logger = new Logger(CoreEnv.CLI, TraceLevel.TRACE_ALL);
-    const inquirer = new Inquirer(CoreEnv.DUMMY);
-    const oRegistry = new Registry(registryEndpoint, registryEndpoint);
-
-    const devclass = data.devclass.trim().toUpperCase();
-    const target = data.target.trim().toUpperCase();
-    var packageName = data.packageName;
-    var description = data.packageDescription;
-    var git = data.packageGit;
-    var website = data.packageWebsite;
-    var license = data.packageLicense;
-    var keywords: string | string[] = data.packageKeywords;
-    var authors: string | string[] = data.packageAuthors;
-    var sapEntries: any = data.packageSapEntries;
-    var dependencies: any = data.packageDependencies;
-    var readme = data.readme;
-    if (!packageName) {
-        if (repoData) {
-            packageName = repoData.data.name;
-            logger.info(`"packageName" from Github repository -> "${packageName}"`);
-        } else {
-            throw new Error(`Argument "packageName" not provided.`);
-        }
-    }
-    if (sapEntries) {
-        var sSapEntries: string;
-        try {
-            sSapEntries = fs.readFileSync(sapEntries).toString();
-        } catch (e) {
-            sSapEntries = sapEntries;
-        }
-        sapEntries = JSON.parse(sSapEntries);
-    } else {
-        sapEntries = {};
-    }
-    if (dependencies) {
-        var sDependencies: string;
-        if (dependencies.trim()[0] === '[') {
-            sDependencies = dependencies;
-        } else {
-            sDependencies = fs.readFileSync(dependencies).toString();
-        }
-        dependencies = JSON.parse(sDependencies);
-    } else {
+    }catch(e){
         dependencies = [];
     }
-    if (!description) {
-        if (repoData) {
-            description = repoData.data.description;
-            logger.info(`"description" from Github repository -> "${description}"`);
+    dependencies.forEach(o => {
+        if(!o.name){
+            throw new Error(`Package dependencies input: missing dependency name.`);
         }
-    }
-    if (!git) {
-        if (repoData) {
-            git = repoData.data.git_url;
-            logger.info(`"git" from Github repository -> "${git}"`);
+        if(!o.version){
+            throw new Error(`Package dependencies input: missing dependency version.`);
         }
-    }
-    if (!website) {
-        if (repoData) {
-            website = repoData.data.homepage;
-            logger.info(`"website" from Github repository -> "${website}"`);
+        if(!o.integrity){
+            throw new Error(`Package dependencies input: missing dependency integrity.`);
         }
-    }
-    if (!license) {
-        if (repoData) {
-            if (repoData.data.license && repoData.data.license.spdx_id) {
-                license = repoData.data.license.spdx_id;
-                logger.info(`"license" from Github repository -> "${license}"`);
-            }
-        }
-    }
-    if (!keywords) {
-        if (repoData) {
-            keywords = repoData.data.topics;
-            logger.info(`"keywords" from Github repository -> [${(keywords as string[]).join(', ')}]`);
-        }
-    } else {
-        var aKeywords = keywords.split(',');
-        aKeywords.forEach(k => {
-            k = k.trim();
-        });
-        keywords = aKeywords;
-    }
-    if (!authors) {
-        if (octokit) {
-            var fetchContributors = true;
-            var iPage = 0;
-            var aContributors: any[] = [];
-            while (fetchContributors) {
-                iPage++;
-                const tmpContributors = await octokit.request('GET /repos/{owner}/{repo}/contributors', {
-                    owner: githubContext.repo.owner,
-                    repo: githubContext.repo.repo,
-                    per_page: 100,
-                    page: iPage,
-                    headers: {
-                        'X-GitHub-Api-Version': '2022-11-28'
-                    }
-                });
-                aContributors = aContributors.concat(tmpContributors.data);
-                fetchContributors = tmpContributors.data.length > 0;
-            }
-            authors = aContributors.map(o => o.login);
-            logger.info(`"authors" from Github repository -> [${authors.join(', ')}]`);
-        }
-    } else {
-        var aAuthors = authors.split(',');
-        aAuthors.forEach(a => {
-            a = a.trim();
-        });
-        authors = aAuthors;
-    }
-    if (readme) {
-        var sReadme: string;
-        try {
-            sReadme = fs.readFileSync(readme).toString();
-        } catch (e) {
-            sReadme = readme;
-        }
-        readme = sReadme;
-    }
+    });
+    return dependencies;
+}
 
-    const registryPing = await oRegistry.ping();
-    if (registryPing.wallMessage) {
-        logger.registryResponse(registryPing.wallMessage);
+const _getSapEntries = (iSapEntries: string): any => {
+    var sapEntries;
+    try{
+        sapEntries = JSON.parse(iSapEntries);
+        if(Array.isArray(sapEntries)){
+            throw new Error(`SAP Entries input: invalid JSON.`);
+        }
+    }catch(e){
+        sapEntries = {};
     }
-    if (registryAuth && registryPing.authenticationType !== AuthenticationType.NO_AUTH) {
-        logger.loading(`Logging into registry...`);
-        await oRegistry.authenticate(inquirer, logger, registryAuth);
-        const whoami = await oRegistry.whoAmI();
-        logger.success(`Logged in as "${whoami.username}"`);
+    Object.keys(sapEntries).forEach(k => {
+        if(!Array.isArray(sapEntries[k])){
+            throw new Error(`SAP Entries input: invalid JSON.`);
+        }
+        sapEntries[k].forEach(o => {
+            if(!Array.isArray(o)){
+                throw new Error(`SAP Entries input: invalid JSON.`);
+            }
+            if(Object.keys(o).length === 0){
+                throw new Error(`SAP Entries input: invalid JSON.`);
+            }
+        });
+    });
+    return sapEntries;
+}
+
+export async function publish(data: ActionArgs) {
+    const debug = core.isDebug();
+    if(data.simpleLog){
+        Logger.logger = new ConsoleLogger(debug);
+    }else{
+        Logger.logger = new GithubLogger(debug);
     }
-    const oSystem = new SystemConnector({
+    Inquirer.inquirer = new CliInquirer(); //TODO: dummy inquirer that throws error is needs user interaction
+    SystemConnector.systemConnector = new ServerSystemConnector({
         dest: data.systemDest,
         ashost: data.systemAsHost,
-        sysnr: data.systemSysNr,
-        saprouter: data.systemSapRouter
+        sysnr: data.systemSysnr
     }, {
         client: data.systemClient,
-        lang: data.systemLang,
         user: data.systemUser,
-        passwd: data.systemPassword
-    }, logger);
-    await oSystem.connect();
-    await trmPublish({
+        passwd: data.systemPassword,
+        lang: data.systemLang
+    });
+
+    //connections
+    await SystemConnector.connect();
+    const registry = await _getRegistry(data.registryEndpoint, data.registryAuth);
+
+    //data parsing
+    const packageName = data.packageName;
+    const packageVersion = data.packageVersion;
+    const packagePrivate = data.private;
+    const authors = data.authors;
+    const backwardsCompatible = data.backwardsCompatible;
+    const devclass = data.devclass;
+    const target = data.target;
+    const releaseTimeout = data.releaseTimeout;
+    const description = data.description;
+    const git = data.git;
+    const license = data.license;
+    const keywords = data.keywords;
+    const website = data.website;
+    const readme = _getReadme(data.readme);
+    const overwriteManifestValues = data.overwriteManifestValues;
+    const customizingTransports = _getCustTransports(data.custTransports);
+    const dependencies = _getDependencies(data.dependencies);
+    const sapEntries = _getSapEntries(data.sapEntries);
+    const skipDependencies = data.skipDependencies;
+    const skipLang = data.skipLang;
+    const tmpFolder = data.tmpFolder || __dirname;
+    await action({
         package: {
             name: packageName,
-            version: data.packageVersion || 'latest',
+            version: packageVersion,
+            private: packagePrivate,
+            authors,
+            backwardsCompatible,
             description,
             git,
-            website,
-            private: data.packagePrivate || false,
-            license,
             keywords,
-            authors: authors ? (authors as string[]).map(s => {
-                return {
-                    name: s
-                }
-            }) : [],
-            backwardsCompatible: data.packageBackwardsCompatible || false,
-            sapEntries: sapEntries,
-            dependencies: (dependencies as TrmManifestDependency[])
+            license,
+            website,
+            dependencies,
+            sapEntries
         },
+        registry,
         devclass,
         target,
         readme,
-        releaseTimeout: data.releaseTimeout,
-        ci: true,
-        tmpFolder: __dirname,
-        skipDependencies: data.skipDependencies,
-        skipLang: data.skipTrLang
-    }, inquirer, oSystem, oRegistry, logger);
+        skipDependencies,
+        skipLang,
+        overwriteManifestValues,
+        releaseTimeout,
+        customizingTransports,
+        tmpFolder,
+        silent: true
+    });
 }
