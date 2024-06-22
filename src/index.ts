@@ -11,6 +11,7 @@ publish({
     systemDest: core.getInput('systemDest'),
     systemAsHost: core.getInput('systemAsHost'),
     systemSysnr: core.getInput('systemSysnr'),
+    systemSapRouter: core.getInput('systemSapRouter'),
     systemClient: core.getInput('systemClient'),
     systemUser: core.getInput('systemUser'),
     systemPassword: core.getInput('systemPassword'),

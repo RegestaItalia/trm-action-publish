@@ -7,6 +7,7 @@ export type ActionArgs = {
     systemDest: string,
     systemAsHost: string,
     systemSysnr: string,
+    systemSapRouter?: string,
     systemClient: string,
     systemUser: string,
     systemPassword: string,
@@ -143,7 +144,8 @@ export async function publish(data: ActionArgs) {
     SystemConnector.systemConnector = new ServerSystemConnector({
         dest: data.systemDest,
         ashost: data.systemAsHost,
-        sysnr: data.systemSysnr
+        sysnr: data.systemSysnr,
+        saprouter: data.systemSapRouter
     }, {
         client: data.systemClient,
         user: data.systemUser,

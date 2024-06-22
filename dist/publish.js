@@ -145,7 +145,8 @@ function publish(data) {
         trm_core_1.SystemConnector.systemConnector = new trm_core_1.ServerSystemConnector({
             dest: data.systemDest,
             ashost: data.systemAsHost,
-            sysnr: data.systemSysnr
+            sysnr: data.systemSysnr,
+            saprouter: data.systemSapRouter
         }, {
             client: data.systemClient,
             user: data.systemUser,
