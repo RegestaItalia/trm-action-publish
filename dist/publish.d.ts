@@ -2,6 +2,7 @@ export type ActionArgs = {
     systemDest: string;
     systemAsHost: string;
     systemSysnr: string;
+    systemSapRouter?: string;
     systemClient: string;
     systemUser: string;
     systemPassword: string;

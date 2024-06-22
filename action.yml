@@ -14,6 +14,9 @@ inputs:
   systemSysnr:
     description: Origin system instance number
     required: true
+  systemSapRouter:
+    description: Origin system SAProuter
+    required: false
   systemClient:
     description: Origin system logon client
     required: true
