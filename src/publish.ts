@@ -133,6 +133,19 @@ const _getSapEntries = (iSapEntries: string): any => {
     return sapEntries;
 }
 
+const _getKeywords = (iKeywords: string): string[] => {
+    if(!iKeywords){
+        return [];
+    }
+    var keywords;
+    try{
+        keywords = JSON.parse(iKeywords);
+    }catch(e){
+        keywords = iKeywords.split(',');
+    }
+    return keywords;
+}
+
 export async function publish(data: ActionArgs) {
     const debug = core.isDebug();
     if(data.simpleLog){
@@ -161,7 +174,6 @@ export async function publish(data: ActionArgs) {
     const packageName = data.packageName;
     const packageVersion = data.packageVersion;
     const packagePrivate = data.private;
-    const authors = data.authors;
     const backwardsCompatible = data.backwardsCompatible;
     const devclass = data.devclass;
     const target = data.target;
@@ -169,7 +181,8 @@ export async function publish(data: ActionArgs) {
     const description = data.description;
     const git = data.git;
     const license = data.license;
-    const keywords = data.keywords;
+    const keywords = _getKeywords(data.keywords);
+    const authors = data.authors;
     const website = data.website;
     const readme = _getReadme(data.readme);
     const overwriteManifestValues = data.overwriteManifestValues;

@@ -132,6 +132,19 @@ const _getSapEntries = (iSapEntries) => {
     });
     return sapEntries;
 };
+const _getKeywords = (iKeywords) => {
+    if (!iKeywords) {
+        return [];
+    }
+    var keywords;
+    try {
+        keywords = JSON.parse(iKeywords);
+    }
+    catch (e) {
+        keywords = iKeywords.split(',');
+    }
+    return keywords;
+};
 function publish(data) {
     return __awaiter(this, void 0, void 0, function* () {
         const debug = core.isDebug();
@@ -158,7 +171,6 @@ function publish(data) {
         const packageName = data.packageName;
         const packageVersion = data.packageVersion;
         const packagePrivate = data.private;
-        const authors = data.authors;
         const backwardsCompatible = data.backwardsCompatible;
         const devclass = data.devclass;
         const target = data.target;
@@ -166,7 +178,8 @@ function publish(data) {
         const description = data.description;
         const git = data.git;
         const license = data.license;
-        const keywords = data.keywords;
+        const keywords = _getKeywords(data.keywords);
+        const authors = data.authors;
         const website = data.website;
         const readme = _getReadme(data.readme);
         const overwriteManifestValues = data.overwriteManifestValues;
