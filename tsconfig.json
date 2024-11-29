@@ -4,8 +4,8 @@
         "module": "commonjs",
         "esModuleInterop": true,
         "rootDir": "src",
-        "outDir": "dist",
-        "sourceMap": false,
+        "outDir": "tmpDist",
+        "sourceMap": true,
         "removeComments": true,
         "declaration": true
     },
