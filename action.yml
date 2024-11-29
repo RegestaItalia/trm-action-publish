@@ -5,110 +5,116 @@ branding:
   icon: 'upload'
   color: 'yellow'
 inputs:
-  systemDest:
-    description: Origin system ID
-    required: true
-  systemAsHost:
-    description: Origin system application Server
-    required: true
-  systemSysnr:
-    description: Origin system instance number
-    required: true
-  systemSapRouter:
-    description: Origin system SAProuter
+  githubToken:
+    description: Github token used for default manifest values (defaults to action token).
     required: false
-  systemClient:
-    description: Origin system logon client
+    default: ${{ github.token }}
+  systemRFCDest:
+    description: Source system RFC connection system ID (SID).
+    required: false
+  systemRFCAsHost:
+    description: Source system RFC connection application server.
+    required: false
+  systemRFCSysnr:
+    description: Source system RFC connection instance number.
+    required: false
+  systemRFCSAPRouter:
+    description: Source system RFC connection SAP router string.
+    required: false
+  systemRESTEndpoint:
+    description: Source system REST connection endpoint.
+    required: false
+  systemRESTRfcDestination:
+    description: Source system REST connection RFC destination.
+    required: false
+  systemLoginClient:
+    description: Source system login client.
+    required: false
+  systemLoginUser:
+    description: Source system login user.
     required: true
-  systemUser:
-    description: Origin system logon user
+  systemLoginPassword:
+    description: Source system login password.
     required: true
-  systemPassword:
-    description: Origin system logon password
+  systemLoginLanguage:
+    description: Source system login language.
     required: true
-  systemLang:
-    description: Origin system logon language
-    required: true
-  devclass:
-    description: SAP Package
-    required: true
-  target:
-    description: SAP Transport release target
+  name:
+    description: Name of the TRM package to publish.
     required: true
   registryEndpoint:
-    description: Registry endpoint
+    description: Endpoint of the publish registry.
+    required: false
     default: public
+  registryToken:
+    description: Authentication token for the registry.
     required: false
   registryAuth:
-    description: Registry authentication in JSON format
+    description: Authentication object for the registry in JSON format. WIll overwrite authentication token if both are provided.
     required: false
-  packageName:
-    description: Package name (on registry)
-    required: true
-  packageVersion:
-    description: Package version (on registry)
+  version:
+    description: Version of the TRM package to publish.
+    required: false
     default: latest
-    required: false
-  description:
-    description: Package short description
-    required: false
   private:
-    description: Package visibility
+    description: Visibility of the TRM package to publish
+    required: false
     default: false
+  abapPackage:
+    description: Name of the ABAP package to publish.
     required: false
-  git:
-    description: Git repository url
-    required: false
-  website:
-    description: Package website url
-    required: false
-  license:
-    description: Package SPDX license
-    required: false
-  authors:
-    description: Package authors separated by comma
-    required: false
-  keywords:
-    description: Package keywords separated by comma
-    required: false
-  readme:
-    description: Package readme or path to readme file
-    required: false
-  releaseTimeout:
-    description: Transport request release timeout, in seconds (increase for larger packages)
-    default: 180
-    required: false
-  overwriteManifestValues:
-    description: Overwrite existing manifest values from previous release from registry
-    default: true
-    required: false
-  skipDependencies:
-    description: Skip seraching for TRM/SAP Entries dependencies
-    default: false
-    required: false
-  skipLang:
-    description: Skip translation transport generation
-    default: false
+  shortDescription:
+    description: TRM package short description (defaults to the description of the repository running the action).
     required: false
   backwardsCompatible:
-    description: Indicates that the current release is backwards compatible with the previous releases
-    default: true
+    description: Flag that indicates if the current release is backwards compatible with the previous release.
     required: false
-  custTransports:
-    description: Customizing transports separated by comma to include (main transports are sufficient)
+    default: true
+  keepLatestReleaseManifestValues:
+    description: Copy the same manifest values from the latest release
+    required: false
+    default: false
+  authors:
+    description: TRM package authors (separated by comma - defaults to the authors in the repository running the action).
+    required: false
+  keywords:
+    description: TRM package keywords (separated by comma - defaults to the keywords in the repository running the action).
+    required: false
+  git:
+    description: TRM package git repository URL (defaults to the repository running the action).
+    required: false
+  website:
+    description: TRM package project website URL (defaults to the website in the repository running the action).
+    required: false
+  license:
+    description: TRM package license (defaults to the license in the repository running the action).
     required: false
   dependencies:
-    description: Manually added TRM dependencies in JSON format
+    description: Manually added TRM package dependencies in JSON format.
     required: false
   sapEntries:
-    description: Manually added SAP Entries in JSON format
+    description: Manually added TRM SAP object dependencies in JSON format.
     required: false
-  tmpFolder:
-    description: Directory for temporary files
+  readme:
+    description: Path to the file or markup text of the TRM package readme (defaults to repository README.md file content in root, if exists).
     required: false
-  simpleLog:
-    description: Don't use Github Actions annotations on important log messages
+  releaseTransportTarget:
+    description: Transport target used during publish release.
+    required: true
+  releaseTransportTimeout:
+    description: Transport release timeout (in seconds).
+    required: false
+    default: 180
+  noDependencyDetection:
+    description: Skip automatic SAP objects/TRM packages detection.
+    required: false
     default: false
+  noLanguageTransport:
+    description: Skip publish of language transport (translations).
+    required: false
+    default: false
+  customizingTransports:
+    description: Customizing transport to publish (separated by comma).
     required: false
 runs:
   using: 'node20'

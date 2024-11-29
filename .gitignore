@@ -1,6 +1,7 @@
 .vscode
-/node_modules
 dev_rfc.log
 test.ts
 _noderfc.log
-/dist/test*
+node_modules
+.env
+tmpDist

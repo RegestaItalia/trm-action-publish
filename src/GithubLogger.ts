@@ -1,9 +1,11 @@
 import { ILogger, TreeLog } from "trm-core";
 import * as core from "@actions/core";
 import { MessageType, ResponseMessage } from "trm-registry-types";
+import styles from 'ansi-styles';
 
 export class GithubLogger implements ILogger {
     debug: boolean;
+    private _prefix: string = '';
 
     constructor(debug: boolean) { }
 
@@ -12,7 +14,7 @@ export class GithubLogger implements ILogger {
             core.debug(text);
             return;
         }
-        console.log(text);
+        console.log(`${styles.blue.open}${text}${styles.blue.close}`);
     }
 
     public success(text: string, debug?: boolean) {
@@ -20,7 +22,7 @@ export class GithubLogger implements ILogger {
             core.debug(text);
             return;
         }
-        console.log(text);
+        console.log(`${styles.green.open}${text}${styles.green.close}`);
     }
 
     public error(text: string, debug?: boolean) {
@@ -52,10 +54,10 @@ export class GithubLogger implements ILogger {
             core.debug(text);
             return;
         }
-        console.log(text);
+        console.log(`${styles.dim.open}${text}${styles.dim.close}`);
     }
 
-    public table(header: any, data: any, debug?: boolean) {
+    public table(header: string[], data: string[][], debug?: boolean) {
         const table = {
             header,
             data
@@ -64,7 +66,10 @@ export class GithubLogger implements ILogger {
             core.debug(JSON.stringify(table));
             return;
         }
-        console.log(JSON.stringify(table));
+        console.log(header.map(h => `${styles.bold.open}${h}${styles.bold.close}`).join(','));
+        data.forEach(d => {
+            console.log(d.join(','));
+        });
     }
 
     public registryResponse(response: ResponseMessage, debug?: boolean) {
@@ -90,4 +95,17 @@ export class GithubLogger implements ILogger {
         }
         console.log(JSON.stringify(data));
     }
+
+    public setPrefix(text: string): void {
+        this._prefix = text;
+    }
+
+    public removePrefix(): void {
+        this._prefix = "";
+    }
+
+    public getPrefix(): string {
+        return this._prefix;
+    }
+
 }

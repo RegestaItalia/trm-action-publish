@@ -1,4 +1,0 @@
-set -e;
-mv '<%- desktopFilePath %>'  ~/.local/share/applications
-cd ~/.local/share/applications
-xdg-mime default <%- desktopFileName %> x-scheme-handler/<%= protocol %>
