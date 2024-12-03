@@ -1,0 +1,36 @@
+name: Build
+on:
+  push:
+    branches-ignore:
+      - 'main'
+  workflow_dispatch:
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            src:
+              - 'src/**'
+      - name: Npm Install
+        if: ${{ steps.changes.outputs.src == 'true' }}
+        run: npm install
+      - name: Install typescript
+        if: ${{ steps.changes.outputs.src == 'true' }}
+        run: npm install -g typescript
+      - name: Install @vercel/ncc
+        if: ${{ steps.changes.outputs.src == 'true' }}
+        run: npm install -g @vercel/ncc
+      - name: Build
+        if: ${{ steps.changes.outputs.src == 'true' }}
+        run: ncc build src/index.ts -o dist --source-map --license licenses.txt
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        if: ${{ steps.changes.outputs.src == 'true' }}
+        with:
+          commit_message: Automatic build

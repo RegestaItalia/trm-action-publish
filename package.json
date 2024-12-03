@@ -4,7 +4,7 @@
   "description": "Github Action - TRM Publish",
   "scripts": {
     "build": "tsc",
-    "package": "npx ncc build src/index.ts -o dist --source-map --license licenses.txt"
+    "package": "ncc build src/index.ts -o dist --source-map --license licenses.txt"
   },
   "homepage": "https://github.com/RegestaItalia/trm-action-publish",
   "repository": {

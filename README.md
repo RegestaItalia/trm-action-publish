@@ -10,7 +10,6 @@ The runner used for this action must have these requirements:
 - Must have installed
     - Node.Js
     - [SAP NW RFC SDK](https://docs.trmregistry.com/#/client/docs/setup?id=sap-nw-rfc-sdk) (if connecting via RFC)
-    - [R3Trans program](https://docs.trmregistry.com/#/client/docs/setup?id=r3trans-program)
 
 ## Usage
 
