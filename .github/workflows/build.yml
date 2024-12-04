@@ -18,6 +18,7 @@ jobs:
           filters: |
             src:
               - 'src/**'
+              - 'package.json'
       - name: Npm Install
         if: ${{ steps.changes.outputs.src == 'true' }}
         run: npm install
