@@ -19,7 +19,7 @@ To view an example of usage, refer to [this article](https://docs.trmregistry.co
 
 ```
 - name: TRM publish package
-  uses: RegestaItalia/trm-action-publish@3.0.1
+  uses: RegestaItalia/trm-action-publish@latest
   with:
     systemRESTEndpoint: ${{ vars.ENDPOINT }}
     systemLoginUser: ${{ vars.USERNAME }}
@@ -40,7 +40,7 @@ To view an example of usage, refer to [this article](https://docs.trmregistry.co
 
 ```
 - name: TRM publish package
-  uses: RegestaItalia/trm-action-publish@3.0.1
+  uses: RegestaItalia/trm-action-publish@latest
   with:
     systemRFCDest: ${{ vars.DEST }}
     systemRFCAsHost: ${{ vars.ASHOST }}
