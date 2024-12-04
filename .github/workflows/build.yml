@@ -12,6 +12,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.CI_GITHUB_TOKEN }}
       - uses: dorny/paths-filter@v2
         id: changes
         with:
@@ -34,4 +36,4 @@ jobs:
       - uses: stefanzweifel/git-auto-commit-action@v5
         if: ${{ steps.changes.outputs.src == 'true' }}
         with:
-          commit_message: Automatic build
+          commit_message: 'Automatic build skip-checks: true'
