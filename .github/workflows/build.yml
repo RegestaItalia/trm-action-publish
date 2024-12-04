@@ -36,4 +36,4 @@ jobs:
       - uses: stefanzweifel/git-auto-commit-action@v5
         if: ${{ steps.changes.outputs.src == 'true' }}
         with:
-          commit_message: 'Automatic build skip-checks: true'
+          commit_message: 'Automatic build [skip ci]'
