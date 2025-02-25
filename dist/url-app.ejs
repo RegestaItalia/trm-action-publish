@@ -1,9 +1,4 @@
 on open location this_URL
-    <%if (terminal > 0) { %>
-        do shell script "defaults write com.protocol.registry.<%- protocol %> current_url '" & this_URL & "'"
-        tell application "<%- application %>" to activate
-    <% } else { %>
-        set command to "<%- command %>"
-        do shell script "export PR_APP_PATH='<%- process.env.PATH %>' ; export PATH=$PR_APP_PATH:$PATH ; sh -lc  \"" & command & "\""
-    <% } %>
+    set the clipboard to this_URL
+    tell application "<%- application %>" to activate
 end open location
