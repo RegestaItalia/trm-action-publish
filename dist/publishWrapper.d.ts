@@ -34,5 +34,6 @@ export type ActionArgs = {
     sapEntries?: string;
     readme?: string;
     customizingTransports?: string;
+    test?: boolean;
 };
 export declare function publishWrapper(data: ActionArgs): Promise<PublishActionOutput>;
