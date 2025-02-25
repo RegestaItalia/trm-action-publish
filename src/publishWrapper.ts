@@ -36,7 +36,8 @@ export type ActionArgs = {
     dependencies?: string,
     sapEntries?: string,
     readme?: string,
-    customizingTransports?: string
+    customizingTransports?: string,
+    test?: boolean
 };
 
 export async function publishWrapper(data: ActionArgs): Promise<PublishActionOutput> {
@@ -96,19 +97,20 @@ export async function publishWrapper(data: ActionArgs): Promise<PublishActionOut
     //data parsing
     var dependencies: TrmManifestDependency[] = [];
     var sapEntries: any = {};
-    Logger.loading(`Reading repository data...`);
-    if(!data.shortDescription){
-        //defaults to the description of the repository running the action
-        data.shortDescription = (await octokit.graphql(`
+    if (!data.test) {
+        Logger.loading(`Reading repository data...`);
+        if (!data.shortDescription) {
+            //defaults to the description of the repository running the action
+            data.shortDescription = (await octokit.graphql(`
             query {
                 repository(owner: "${context.repo.owner}", name: "${context.repo.repo}") {
                     description
                 }
             }`) as any).repository.description;
-    }
-    if (!data.authors) {
-        //defaults to the authors in the repository running the action
-        const gitAuthors: string[] = (await octokit.graphql(`
+        }
+        if (!data.authors) {
+            //defaults to the authors in the repository running the action
+            const gitAuthors: string[] = (await octokit.graphql(`
             query {
                 repository(owner: "${context.repo.owner}", name: "${context.repo.repo}") {
                     defaultBranchRef {
@@ -126,13 +128,13 @@ export async function publishWrapper(data: ActionArgs): Promise<PublishActionOut
                     }
                 }
             }`) as any).repository.defaultBranchRef?.target.history.nodes.map(node => node.author.name).filter((v, i, a) => a.indexOf(v) === i);
-        if (gitAuthors.length > 0) {
-            data.authors = gitAuthors.join(',');
+            if (gitAuthors.length > 0) {
+                data.authors = gitAuthors.join(',');
+            }
         }
-    }
-    if (!data.keywords) {
-        //defaults to the keywords in the repository running the action
-        const gitKeywords: string[] = (await octokit.graphql(`
+        if (!data.keywords) {
+            //defaults to the keywords in the repository running the action
+            const gitKeywords: string[] = (await octokit.graphql(`
             query {
                 repository(owner: "${context.repo.owner}", name: "${context.repo.repo}") {
                     repositoryTopics(first: 10) {
@@ -146,34 +148,34 @@ export async function publishWrapper(data: ActionArgs): Promise<PublishActionOut
                     }
                 }
             }`) as any).repository.repositoryTopics.edges.map(edge => edge.node.topic.name);
-        if (gitKeywords.length > 0) {
-            data.keywords = gitKeywords.join(',');
+            if (gitKeywords.length > 0) {
+                data.keywords = gitKeywords.join(',');
+            }
         }
-    }
-    if (!data.git) {
-        //defaults to the repository running the action
-        data.git = (await octokit.graphql(`
+        if (!data.git) {
+            //defaults to the repository running the action
+            data.git = (await octokit.graphql(`
             query {
                 repository(owner: "${context.repo.owner}", name: "${context.repo.repo}") {
                     url
                 }
             }`) as any).repository.url;
-        if(data.git){
-            data.git += ".git";
+            if (data.git) {
+                data.git += ".git";
+            }
         }
-    }
-    if (!data.website) {
-        //defaults to the website in the repository running the action
-        data.website = (await octokit.graphql(`
+        if (!data.website) {
+            //defaults to the website in the repository running the action
+            data.website = (await octokit.graphql(`
             query {
                 repository(owner: "${context.repo.owner}", name: "${context.repo.repo}") {
                     homepageUrl
                 }
             }`) as any).repository.homepageUrl;
-    }
-    if (!data.license) {
-        //defaults to the license in the repository running the action
-        data.license = (await octokit.graphql(`
+        }
+        if (!data.license) {
+            //defaults to the license in the repository running the action
+            data.license = (await octokit.graphql(`
             query {
                 repository(owner: "${context.repo.owner}", name: "${context.repo.repo}") {
                     licenseInfo {
@@ -181,22 +183,22 @@ export async function publishWrapper(data: ActionArgs): Promise<PublishActionOut
                     }
                 }
             }`) as any).repository.licenseInfo?.spdxId;
-    }
-    if (data.readme) {
-        //Path to the file or markup text
-        try{
-            data.readme = readFileSync(data.readme).toString();
-        }catch(e){
-            //text is markup
         }
-    } else {
-        //defaults to repository README.md file content in root, if exists
-        const workflowRun = (await octokit.rest.actions.getWorkflowRun({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            run_id: context.runId
-        })).data;
-        data.readme = (await octokit.graphql(`
+        if (data.readme) {
+            //Path to the file or markup text
+            try {
+                data.readme = readFileSync(data.readme).toString();
+            } catch (e) {
+                //text is markup
+            }
+        } else {
+            //defaults to repository README.md file content in root, if exists
+            const workflowRun = (await octokit.rest.actions.getWorkflowRun({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: context.runId
+            })).data;
+            data.readme = (await octokit.graphql(`
             query {
                 repository(owner: "${context.repo.owner}", name: "${context.repo.repo}") {
                     object(expression: "${workflowRun.head_branch}:README.md") {
@@ -206,6 +208,7 @@ export async function publishWrapper(data: ActionArgs): Promise<PublishActionOut
                     }
                 }
             }`) as any).repository.object?.text;
+        }
     }
     const actionInput: PublishActionInput = {
         contextData: {
