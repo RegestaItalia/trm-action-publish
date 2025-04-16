@@ -32,7 +32,7 @@ jobs:
         run: npm install -g @vercel/ncc
       - name: Build
         if: ${{ steps.changes.outputs.src == 'true' }}
-        run: ncc build src/index.ts -o dist --source-map --license licenses.txt
+        run: npm run package
       - uses: stefanzweifel/git-auto-commit-action@v5
         if: ${{ steps.changes.outputs.src == 'true' }}
         with:
