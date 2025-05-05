@@ -1,7 +1,7 @@
-import { ILogger, TreeLog } from "trm-core";
 import * as core from "@actions/core";
 import { MessageType, ResponseMessage } from "trm-registry-types";
 import styles from 'ansi-styles';
+import { ILogger, TreeLog } from "trm-commons";
 
 export class GithubLogger implements ILogger {
     debug: boolean;
@@ -106,6 +106,26 @@ export class GithubLogger implements ILogger {
 
     public getPrefix(): string {
         return this._prefix;
+    }
+
+    public msgty(msgty: string, text: string, debug?: boolean){
+        switch(msgty){
+            case 'A':
+                this.error(text, debug);
+                break;
+            case 'E':
+                this.error(text, debug);
+                break;
+            case 'I':
+                this.info(text, debug);
+                break;
+            case 'S':
+                this.success(text, debug);
+                break;
+            case 'W':
+                this.warning(text, debug);
+                break;
+        }
     }
 
 }

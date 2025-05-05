@@ -1,4 +1,4 @@
-import { IInquirer, Question } from "trm-core";
+import { IInquirer, Question } from "trm-commons";
 
 export class GithubInquirer implements IInquirer {
 
