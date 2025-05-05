@@ -30,7 +30,8 @@
     "@actions/core": "^1.10.1",
     "@actions/github": "^5.1.1",
     "ansi-styles": "^6.2.1",
-    "trm-core": "^6.2.5",
+    "trm-commons": "^1.0.0",
+    "trm-core": "^6.5.0",
     "trm-registry-types": "^1.2.0"
   },
   "devDependencies": {

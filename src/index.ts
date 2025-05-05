@@ -1,8 +1,9 @@
 import { getBooleanInput, getInput, isDebug, setFailed } from "@actions/core";
 import { ActionArgs, publishWrapper } from "./publishWrapper";
 import { GithubLogger } from "./GithubLogger";
-import { Inquirer, Logger, PublishActionOutput } from "trm-core";
+import { PublishActionOutput } from "trm-core";
 import { GithubInquirer } from "./GithubInquirer";
+import { Inquirer, Logger } from "trm-commons";
 
 const main = async(data: ActionArgs): Promise<PublishActionOutput> => {
     //set logger

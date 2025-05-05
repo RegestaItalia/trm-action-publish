@@ -1,6 +1,7 @@
 import { context, getOctokit } from "@actions/github";
-import { Logger, Login, PUBLIC_RESERVED_KEYWORD, PublishActionInput, PublishActionOutput, RESTSystemConnector, RFCSystemConnector, Registry, SystemConnector, TrmManifestDependency, publish } from "trm-core";
+import { Login, PUBLIC_RESERVED_KEYWORD, PublishActionInput, PublishActionOutput, RESTSystemConnector, RFCSystemConnector, Registry, SystemConnector, TrmManifestDependency, publish } from "trm-core";
 import { readFileSync } from "fs";
+import { Logger } from "trm-commons";
 
 export type ActionArgs = {
     githubToken: string,
