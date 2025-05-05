@@ -1,5 +1,5 @@
-import { ILogger, TreeLog } from "trm-core";
 import { ResponseMessage } from "trm-registry-types";
+import { ILogger, TreeLog } from "trm-commons";
 export declare class GithubLogger implements ILogger {
     debug: boolean;
     private _prefix;
@@ -16,4 +16,5 @@ export declare class GithubLogger implements ILogger {
     setPrefix(text: string): void;
     removePrefix(): void;
     getPrefix(): string;
+    msgty(msgty: string, text: string, debug?: boolean): void;
 }
