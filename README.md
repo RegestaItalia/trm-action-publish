@@ -60,3 +60,15 @@ To view an example of usage, refer to [this article](https://docs.trmregistry.co
     authors: 'User <user@email.com>'
     keywords: 'test, mypackage'
 ```
+
+# Contributing <!-- {docsify-remove} -->
+
+Like every other TRM open-soruce projects, contributions are always welcomed ❤️.
+
+Make sure to open an issue first.
+
+Contributions will be merged upon approval.
+
+[Click here](https://docs.trmregistry.com/#/CONTRIBUTING) for the full list of TRM contribution guidelines.
+
+[<img src="https://trmregistry.com/public/contributors?image=true">](https://docs.trmregistry.com/#/?id=contributors)
