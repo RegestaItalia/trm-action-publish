@@ -21,6 +21,10 @@ jobs:
             src:
               - 'src/**'
               - 'package.json'
+      - uses: actions/setup-node@v4
+        if: ${{ steps.changes.outputs.src == 'true' }}
+        with:
+          node-version: 22.12.0
       - name: Npm Install
         if: ${{ steps.changes.outputs.src == 'true' }}
         run: npm install
