@@ -32,6 +32,7 @@ export type ActionArgs = {
     license?: string;
     dependencies?: string;
     sapEntries?: string;
+    postActivities?: string;
     readme?: string;
     customizingTransports?: string;
     test?: boolean;

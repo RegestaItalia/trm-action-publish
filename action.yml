@@ -95,6 +95,9 @@ inputs:
   sapEntries:
     description: Manually added TRM SAP object dependencies in JSON format.
     required: false
+  postActivities:
+    description: Post activities in JSON format.
+    required: false
   readme:
     description: Path to the file or markup text of the TRM package readme (defaults to repository README.md file content in root, if exists).
     required: false

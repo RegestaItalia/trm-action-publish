@@ -1,7 +1,7 @@
 import { context, getOctokit } from "@actions/github";
-import { Login, PUBLIC_RESERVED_KEYWORD, PublishActionInput, PublishActionOutput, RESTSystemConnector, RFCSystemConnector, Registry, SystemConnector, TrmManifestDependency, publish } from "trm-core";
+import { Login, PUBLIC_RESERVED_KEYWORD, PublishActionInput, PublishActionOutput, RESTSystemConnector, RFCSystemConnector, Registry, SystemConnector, TrmManifestDependency, TrmManifestPostActivity, publish } from "trm-core";
 import { readFileSync } from "fs";
-import { Logger } from "trm-commons";
+import { Inquirer, Logger } from "trm-commons";
 
 export type ActionArgs = {
     githubToken: string,
@@ -36,6 +36,7 @@ export type ActionArgs = {
     license?: string,
     dependencies?: string,
     sapEntries?: string,
+    postActivities?: string,
     readme?: string,
     customizingTransports?: string,
     test?: boolean
@@ -98,6 +99,7 @@ export async function publishWrapper(data: ActionArgs): Promise<PublishActionOut
     //data parsing
     var dependencies: TrmManifestDependency[] = [];
     var sapEntries: any = {};
+    var postActivities: TrmManifestPostActivity[] = [];
     if (!data.test) {
         Logger.loading(`Reading repository data...`);
         if (!data.shortDescription) {
@@ -211,6 +213,42 @@ export async function publishWrapper(data: ActionArgs): Promise<PublishActionOut
             }`) as any).repository.object?.text;
         }
     }
+    if(data.dependencies){
+        try{
+            dependencies = JSON.parse(data.dependencies);
+        }catch(e){
+            Logger.error(e.toString(), true);
+            Logger.error(`JSON parsing error on dependencies: publish will install ignoring dependencies.`);
+        }
+    }
+    if(data.sapEntries){
+        try{
+            sapEntries = JSON.parse(data.sapEntries);
+        }catch(e){
+            Logger.error(e.toString(), true);
+            Logger.error(`JSON parsing error on SAP entries: publish will install ignoring SAP entries.`);
+        }
+    }
+    if(data.postActivities){
+        try{
+            postActivities = JSON.parse(data.postActivities);
+        }catch(e){
+            Logger.error(e.toString(), true);
+            Logger.error(`JSON parsing error on post activities: publish will install ignoring post activities.`);
+        }
+    }
+    try{
+        const aAuthors = JSON.parse(data.authors);
+        data.authors = aAuthors.join(',');
+    }catch(e){
+        //
+    }
+    try{
+        const aKeywords = JSON.parse(data.keywords);
+        data.keywords = aKeywords.join(',');
+    }catch(e){
+        //
+    }
     const actionInput: PublishActionInput = {
         contextData: {
             noInquirer: true,
@@ -229,7 +267,8 @@ export async function publishWrapper(data: ActionArgs): Promise<PublishActionOut
                 website: data.website,
                 license: data.license,
                 dependencies,
-                sapEntries
+                sapEntries,
+                postActivities
             },
             registry
         },
