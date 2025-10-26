@@ -31,8 +31,8 @@
     "@actions/github": "^6.0.1",
     "ansi-styles": "^6.2.1",
     "trm-commons": "^3.4.2",
-    "trm-core": "^7.5.5",
-    "trm-registry-types": "^1.2.0"
+    "trm-core": "^8.0.1",
+    "trm-registry-types": "^2.0.0"
   },
   "peerDependencies": {
     "trm-commons": "^3.4.2"

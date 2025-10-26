@@ -1,5 +1,5 @@
 import * as core from "@actions/core";
-import { MessageType, ResponseMessage } from "trm-registry-types";
+import { Message, MessageType } from "trm-registry-types";
 import styles from 'ansi-styles';
 import { ILogger, TreeLog } from "trm-commons";
 
@@ -72,7 +72,7 @@ export class GithubLogger implements ILogger {
         });
     }
 
-    public registryResponse(response: ResponseMessage, debug?: boolean) {
+    public registryResponse(response: Message, debug?: boolean) {
         if (debug && !this.debug) {
             core.debug(response.text);
             return;
