@@ -60,7 +60,7 @@ main({
     releaseTransportTarget: getInput("releaseTransportTarget", { required: true, trimWhitespace: true }),
     customizingTransports: getInput("customizingTransports", { required: false, trimWhitespace: true })
 }).then(result => {
-    Logger.success(`+ ${result.trmPackage.manifest.get().name} ${result.trmPackage.manifest.get().version}`);
+    Logger.success(`+ ${result.trmPackage.manifest.get().name} v${result.trmPackage.manifest.get().version}`);
 }).catch(e => {
     setFailed(e);
 });
