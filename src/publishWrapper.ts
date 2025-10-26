@@ -1,7 +1,7 @@
 import { context, getOctokit } from "@actions/github";
-import { Login, PUBLIC_RESERVED_KEYWORD, PublishActionInput, PublishActionOutput, RESTSystemConnector, RFCSystemConnector, Registry, SystemConnector, TrmManifestDependency, TrmManifestPostActivity, publish } from "trm-core";
+import { Login, PUBLIC_RESERVED_KEYWORD, PublishActionInput, PublishActionOutput, RESTSystemConnector, RFCSystemConnector, RegistryV2, SystemConnector, TrmManifestDependency, TrmManifestPostActivity, publish } from "trm-core";
 import { readFileSync } from "fs";
-import { Inquirer, Logger } from "trm-commons";
+import { Logger } from "trm-commons";
 
 export type ActionArgs = {
     githubToken: string,
@@ -82,14 +82,18 @@ export async function publishWrapper(data: ActionArgs): Promise<PublishActionOut
     if (data.registryEndpoint.toLowerCase() === PUBLIC_RESERVED_KEYWORD) {
         data.registryEndpoint = PUBLIC_RESERVED_KEYWORD;
     }
-    const registry = new Registry(data.registryEndpoint, data.registryEndpoint);
+    const registry = new RegistryV2(data.registryEndpoint, data.registryEndpoint);
+    const ping = await registry.ping();
+    if(ping.messages){
+        ping.messages.forEach(o => Logger.registryResponse(o));
+    }
     if (registryAuth) {
         Logger.loading(`Logging into "${data.registryEndpoint}" registry...`);
         await registry.authenticate(registryAuth);
         const whoami = await registry.whoAmI();
-        Logger.success(`Logged in as ${whoami.username}`);
-        if (whoami.logonMessage) {
-            Logger.registryResponse(whoami.logonMessage);
+        Logger.success(`Logged in as ${whoami.user}`);
+        if (whoami.messages) {
+            whoami.messages.forEach(o => Logger.registryResponse(o));
         }
     }
 

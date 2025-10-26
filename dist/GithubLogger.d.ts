@@ -1,4 +1,4 @@
-import { ResponseMessage } from "trm-registry-types";
+import { Message } from "trm-registry-types";
 import { ILogger, TreeLog } from "trm-commons";
 export declare class GithubLogger implements ILogger {
     debug: boolean;
@@ -11,7 +11,7 @@ export declare class GithubLogger implements ILogger {
     info(text: string, debug?: boolean): void;
     log(text: string, debug?: boolean): void;
     table(header: string[], data: string[][], debug?: boolean): void;
-    registryResponse(response: ResponseMessage, debug?: boolean): void;
+    registryResponse(response: Message, debug?: boolean): void;
     tree(data: TreeLog, debug?: boolean): void;
     setPrefix(text: string): void;
     removePrefix(): void;
