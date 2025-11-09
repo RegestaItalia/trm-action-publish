@@ -7,6 +7,10 @@ export type ActionArgs = {
     name: string;
     registryEndpoint: string;
     version: string;
+    inc: string;
+    preRelease: boolean;
+    preReleaseIdentifier?: string;
+    tags?: string;
     private: boolean;
     backwardsCompatible: boolean;
     keepLatestReleaseManifestValues: boolean;
