@@ -56,6 +56,20 @@ inputs:
     description: Version of the TRM package to publish.
     required: false
     default: latest
+  inc:
+    description: Increment of latest version (only used when no version is specified)
+    required: false
+    default: patch
+  preRelease:
+    description: Indicates a pre release publish
+    required: false
+    default: false
+  preReleaseIdentifier:
+    description: Pre release identifier (only used if it's a pre release)
+    required: false
+  tags:
+    description: Release tags separated by comma
+    required: false
   private:
     description: Visibility of the TRM package to publish
     required: false

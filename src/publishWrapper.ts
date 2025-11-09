@@ -11,6 +11,10 @@ export type ActionArgs = {
     name: string,
     registryEndpoint: string,
     version: string,
+    inc: string,
+    preRelease: boolean,
+    preReleaseIdentifier?: string,
+    tags?: string,
     private: boolean,
     backwardsCompatible: boolean,
     keepLatestReleaseManifestValues: boolean,
@@ -104,6 +108,7 @@ export async function publishWrapper(data: ActionArgs): Promise<PublishActionOut
     var dependencies: TrmManifestDependency[] = [];
     var sapEntries: any = {};
     var postActivities: TrmManifestPostActivity[] = [];
+    var tags: string[] = [];
     if (!data.test) {
         Logger.loading(`Reading repository data...`);
         if (!data.shortDescription) {
@@ -244,13 +249,18 @@ export async function publishWrapper(data: ActionArgs): Promise<PublishActionOut
     try{
         const aAuthors = JSON.parse(data.authors);
         data.authors = aAuthors.join(',');
-    }catch(e){
+    }catch{
         //
     }
     try{
         const aKeywords = JSON.parse(data.keywords);
         data.keywords = aKeywords.join(',');
-    }catch(e){
+    }catch{
+        //
+    }
+    try{
+        tags = data.tags.split(',').map(t => t.trim());
+    }catch{
         //
     }
     const actionInput: PublishActionInput = {
@@ -262,6 +272,10 @@ export async function publishWrapper(data: ActionArgs): Promise<PublishActionOut
             name: data.name,
             version: data.version,
             devclass: data.abapPackage,
+            inc: data.inc,
+            preRelease: data.preRelease,
+            preReleaseIdentifier: data.preReleaseIdentifier,
+            tags,
             manifest: {
                 description: data.shortDescription,
                 backwardsCompatible: data.backwardsCompatible,
