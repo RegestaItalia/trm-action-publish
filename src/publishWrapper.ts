@@ -69,7 +69,7 @@ export async function publishWrapper(data: ActionArgs): Promise<PublishActionOut
     } else {
         throw new Error(`No system connection defined: an RFC/REST connection must be provided.`);
     }
-    await SystemConnector.connect();
+    await SystemConnector.connect(false);
 
     //get registry
     var registryAuth: any = {};
@@ -291,8 +291,7 @@ export async function publishWrapper(data: ActionArgs): Promise<PublishActionOut
             registry
         },
         systemData: {
-            transportTarget: data.releaseTransportTarget,
-            releaseTimeout: data.releaseTransportTimeout
+            transportTarget: data.releaseTransportTarget
         },
         publishData: {
             private: data.private,
