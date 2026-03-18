@@ -7,7 +7,7 @@ export class GithubLogger implements ILogger {
     debug: boolean;
     private _prefix: string = '';
 
-    constructor(debug: boolean) { }
+    constructor() { }
 
     public loading(text: string, debug?: boolean) {
         if (debug && !this.debug) {
