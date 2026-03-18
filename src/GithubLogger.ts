@@ -4,10 +4,9 @@ import styles from 'ansi-styles';
 import { ILogger, TreeLog } from "trm-commons";
 
 export class GithubLogger implements ILogger {
-    debug: boolean;
     private _prefix: string = '';
 
-    constructor() { }
+    constructor(public debug: boolean) { }
 
     public loading(text: string, debug?: boolean) {
         if (debug && !this.debug) {
