@@ -1,7 +1,5 @@
 set -e;
-<%if (terminal > 0) { %>
-    osacompile -o '<%- appPath %>'  '<%- appSource %>'
-<% } %>
-osacompile -o '<%- urlAppPath %>'  '<%- urlAppSource %>' 
-node '<%- plistMutator %>' '<%- urlAppPath %>' <%= protocol %> 
-open -g -W '<%- urlAppPath %>'
+mv '<%- desktopFilePath %>'  ~/.local/share/applications
+cd ~/.local/share/applications
+chmod +x '<%- desktopFileName %>'
+xdg-mime default '<%- desktopFileName %>' x-scheme-handler/<%= protocol %>
