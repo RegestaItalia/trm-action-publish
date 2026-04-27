@@ -107,8 +107,8 @@ export class GithubLogger implements ILogger {
         return this._prefix;
     }
 
-    public msgty(msgty: string, text: string, debug?: boolean){
-        switch(msgty){
+    public msgty(msgty: string, text: string, debug?: boolean) {
+        switch (msgty) {
             case 'A':
                 this.error(text, debug);
                 break;
@@ -127,6 +127,8 @@ export class GithubLogger implements ILogger {
         }
     }
 
-    public forceStop: () => void;
+    public forceStop() {
+        return;
+    }
 
 }

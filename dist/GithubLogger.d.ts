@@ -17,5 +17,5 @@ export declare class GithubLogger implements ILogger {
     removePrefix(): void;
     getPrefix(): string;
     msgty(msgty: string, text: string, debug?: boolean): void;
-    forceStop: () => void;
+    forceStop(): void;
 }
