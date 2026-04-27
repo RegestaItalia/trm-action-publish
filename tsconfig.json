@@ -1,13 +1,15 @@
 {
     "compilerOptions": {
         "target": "ES6",
-        "module": "commonjs",
+        "module": "NodeNext",
+        "moduleResolution": "nodenext",
         "esModuleInterop": true,
         "rootDir": "src",
         "outDir": "tmpDist",
         "sourceMap": true,
         "removeComments": true,
         "declaration": true,
+        "skipLibCheck": true,
         "strict": false
     },
     "include": [
