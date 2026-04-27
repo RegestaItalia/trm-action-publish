@@ -7,7 +7,8 @@
         "outDir": "tmpDist",
         "sourceMap": true,
         "removeComments": true,
-        "declaration": true
+        "declaration": true,
+        "strict": false
     },
     "include": [
       "src/**/*"

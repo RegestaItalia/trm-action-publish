@@ -127,4 +127,6 @@ export class GithubLogger implements ILogger {
         }
     }
 
+    public forceStop: () => void;
+
 }
