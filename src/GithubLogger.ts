@@ -1,7 +1,7 @@
 import * as core from "@actions/core";
 import { Message, MessageType } from "trm-registry-types";
 import styles from 'ansi-styles';
-import { ILogger, TreeLog } from "trm-commons";
+import { ILogger, ILoggerMultibar, ILoggerProgressbar, TreeLog } from "trm-commons";
 
 export class GithubLogger implements ILogger {
     private _prefix: string = '';
@@ -129,6 +129,45 @@ export class GithubLogger implements ILogger {
 
     public forceStop() {
         return;
+    }
+
+    public progressbar(format: string, glue: string): ILoggerProgressbar {
+        var barTotal;
+        return {
+            start(total: number, value: number, payload?: any) {
+                barTotal = total;
+                console.log(`${value}/${total}${payload ? ' ' + JSON.stringify(payload) : ''}`);
+            },
+            stop() {
+                return;
+            },
+            update(value: number, payload?: any) {
+                console.log(`${value}/${barTotal}${payload ? ' ' + JSON.stringify(payload) : ''}`);
+            }
+        }
+    }
+
+    public multibar(format: string, glue: string): ILoggerMultibar {
+        return {
+            create(total: number, startValue: number, payload?: any): ILoggerProgressbar {
+                var barTotal = total;
+                return {
+                    start(total: number, value: number, payload?: any) {
+                        barTotal = total;
+                        console.log(`${value}/${total}${payload ? ' ' + JSON.stringify(payload) : ''}`);
+                    },
+                    stop() {
+                        return;
+                    },
+                    update(value: number, payload?: any) {
+                        console.log(`${value}/${barTotal}${payload ? ' ' + JSON.stringify(payload) : ''}`);
+                    }
+                }
+            },
+            stop() {
+                return;
+            }
+        }
     }
 
 }
