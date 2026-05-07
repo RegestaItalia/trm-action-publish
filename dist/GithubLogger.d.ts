@@ -1,5 +1,5 @@
 import { Message } from "trm-registry-types";
-import { ILogger, TreeLog } from "trm-commons";
+import { ILogger, ILoggerMultibar, ILoggerProgressbar, TreeLog } from "trm-commons";
 export declare class GithubLogger implements ILogger {
     debug: boolean;
     private _prefix;
@@ -18,4 +18,6 @@ export declare class GithubLogger implements ILogger {
     getPrefix(): string;
     msgty(msgty: string, text: string, debug?: boolean): void;
     forceStop(): void;
+    progressbar(format: string, glue: string): ILoggerProgressbar;
+    multibar(format: string, glue: string): ILoggerMultibar;
 }
