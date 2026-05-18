@@ -30,12 +30,12 @@
     "@actions/core": "^1.10.1",
     "@actions/github": "^8.0.0",
     "ansi-styles": "^6.2.1",
-    "trm-commons": "latest",
-    "trm-core": "latest",
-    "trm-registry-types": "latest"
+    "trm-commons": "5.0.0",
+    "trm-core": "9.6.0",
+    "trm-registry-types": "2.1.0"
   },
   "peerDependencies": {
-    "trm-commons": "latest"
+    "trm-commons": "5.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.4.6",
