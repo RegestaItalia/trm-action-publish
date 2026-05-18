@@ -1,0 +1,6 @@
+set this_URL to do shell script "defaults read com.protocol.registry.<%- protocol %> current_url"
+tell application "Terminal"
+    set command to "<%- command %>"
+    do script command
+    activate
+end tell
