@@ -15,15 +15,6 @@ const main = async(data: ActionArgs): Promise<PublishActionOutput> => {
     return await publishWrapper(data);
 }
 
-const sReleaseTransportTimeout = getInput("releaseTransportTimeout", { required: true, trimWhitespace: true });
-var releaseTransportTimeout: number;
-try{
-    if(sReleaseTransportTimeout){
-        releaseTransportTimeout = parseInt(sReleaseTransportTimeout);
-    }
-}catch(e){
-    setFailed(`Invalid release timeout value: "${sReleaseTransportTimeout}", expected seconds.`);
-}
 main({
     systemLoginUser: getInput("systemLoginUser", { required: true, trimWhitespace: true }),
     systemLoginPassword: getInput("systemLoginPassword", { required: true, trimWhitespace: true }),
@@ -38,7 +29,6 @@ main({
     private: getBooleanInput("private", { required: true, trimWhitespace: true }),
     backwardsCompatible: getBooleanInput("backwardsCompatible", { required: true, trimWhitespace: true }),
     keepLatestReleaseManifestValues: getBooleanInput("keepLatestReleaseManifestValues", { required: true, trimWhitespace: true }),
-    releaseTransportTimeout: releaseTransportTimeout,
     noDependencyDetection: getBooleanInput("noDependencyDetection", { required: true, trimWhitespace: true }),
     noLanguageTransport: getBooleanInput("noLanguageTransport", { required: true, trimWhitespace: true }),
     githubToken: getInput("githubToken", { required: false, trimWhitespace: true }),
