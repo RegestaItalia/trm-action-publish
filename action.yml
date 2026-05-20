@@ -118,10 +118,6 @@ inputs:
   releaseTransportTarget:
     description: Transport target used during publish release.
     required: true
-  releaseTransportTimeout:
-    description: Transport release timeout (in seconds).
-    required: false
-    default: 180
   noDependencyDetection:
     description: Skip automatic SAP objects/TRM packages detection.
     required: false

@@ -18,7 +18,6 @@ export type ActionArgs = {
     private: boolean,
     backwardsCompatible: boolean,
     keepLatestReleaseManifestValues: boolean,
-    releaseTransportTimeout: number,
     noDependencyDetection: boolean,
     noLanguageTransport: boolean,
     releaseTransportTarget: string,
