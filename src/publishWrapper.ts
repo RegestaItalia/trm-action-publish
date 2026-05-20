@@ -204,7 +204,7 @@ export async function publishWrapper(data: ActionArgs): Promise<PublishActionOut
             }
         } else {
             //defaults to repository README.md file content in root, if exists
-            const workflowRun = (await octokit.rest.actions.getWorkflowRun({
+            /*const workflowRun = (await octokit.rest.actions.getWorkflowRun({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 run_id: context.runId
@@ -213,6 +213,16 @@ export async function publishWrapper(data: ActionArgs): Promise<PublishActionOut
             query {
                 repository(owner: "${context.repo.owner}", name: "${context.repo.repo}") {
                     object(expression: "${workflowRun.head_branch}:README.md") {
+                        ... on Blob {
+                            text
+                        }
+                    }
+                }
+            }`) as any).repository.object?.text;*/
+            data.readme = (await octokit.graphql(`
+            query {
+                repository(owner: "${context.repo.owner}", name: "${context.repo.repo}") {
+                    object(expression: "${context.sha}:README.md") {
                         ... on Blob {
                             text
                         }
